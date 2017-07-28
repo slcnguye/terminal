@@ -1,0 +1,57 @@
+#!/bin/bash
+
+i=1
+# Loop from 1 - 250
+while [ $i -le 250 ]
+do
+
+# Input filename variable
+inputFilename="md-test$i.pdb"
+# Output filename variable
+outputFilename="geom$i.txt"
+
+# Init file with metadata
+echo "# Test" > $outputFilename
+echo "RA" >> $outputFilename
+
+# Read input file line by line
+while read -r line
+do
+	wordIndex=0
+	if [[ "$line" =~ "ATOM" ]]
+	then
+		echo -n "E		" >> $outputFilename
+		for word in $line; do
+			if [ "$wordIndex" == 5 ]
+			then
+    			echo -n $word >> $outputFilename
+    			echo -n "		" >> $outputFilename
+			fi
+			if [ "$wordIndex" == 6 ]
+			then
+    			echo -n $word >> $outputFilename
+    			echo -n "		" >> $outputFilename
+			fi
+			if [ "$wordIndex" == 7 ]
+			then
+    			echo -n $word >> $outputFilename
+    			echo -n "	" >> $outputFilename
+			fi
+			if [ "$wordIndex" == 10 ]
+			then
+				if [ "$word" == "O" ]
+				then
+    				echo "1.52 1.52 1.52" >> $outputFilename
+    			else
+    				echo "1.20 1.20 1.20" >> $outputFilename
+				fi
+			fi
+			wordIndex=$(( $wordIndex + 1))
+		done
+	fi
+done < "$inputFilename"
+
+echo -n "#" >> $outputFilename
+
+i=$(( $i + 1 ))
+done
